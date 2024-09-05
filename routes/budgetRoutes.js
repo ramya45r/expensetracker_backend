@@ -3,9 +3,11 @@ const Budget = require("../models/Budget");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
 
-// Middleware for authenticating users
 const authMiddleware = (req, res, next) => {
-  const token = req.header("Authorization");
+  const authHeader = req.header("Authorization");
+  if (!authHeader) return res.status(401).json({ message: "Unauthorized" });
+
+  const token = authHeader.split(' ')[1]; // Extract token from "Bearer <token>"
   if (!token) return res.status(401).json({ message: "Unauthorized" });
 
   try {
@@ -45,7 +47,7 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-// Update an existing budget
+// Update an  budget
 router.put("/:id", authMiddleware, async (req, res) => {
   const { category, budgetLimit } = req.body;
 
